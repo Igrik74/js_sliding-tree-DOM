@@ -2,15 +2,29 @@
 
 const tree = document.querySelectorAll('.tree li');
 
+function getFirstNonEmptyTextNode(el) {
+  for (const node of el.childNodes) {
+    if (node.nodeType === 3) {
+      const trimmed = node.textContent.trim();
+
+      if (trimmed) {
+        return node;
+      }
+    }
+  }
+
+  return null;
+}
+
 function wrapper(item) {
-  const textNode = item.firstChild.textContent.trim();
+  const textNode = getFirstNonEmptyTextNode(item);
 
   if (textNode) {
     const span = document.createElement('span');
 
-    span.textContent = textNode;
+    span.textContent = textNode.textContent.trim();
 
-    item.firstChild.replaceWith(span);
+    textNode.replaceWith(span);
 
     span.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -29,6 +43,10 @@ tree.forEach((item) => {
 
 function hideItems(item) {
   const nextItem = item.nextElementSibling;
+
+  if (!nextItem) {
+    return;
+  } // захист від помилок, якщо немає сусіднього елемента
 
   nextItem.style.display = nextItem.style.display === 'none' ? '' : 'none';
 }
